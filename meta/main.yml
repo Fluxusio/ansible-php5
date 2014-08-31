@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  author: Fluxus
+  description: Ansible role for installing and configuring PHP5
+  license: MIT
+  min_ansible_version: 1.4
+  platforms:
+    - Ubuntu 14.04
+  categories:
+    - php
+
+dependencies: []

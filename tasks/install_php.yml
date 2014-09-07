@@ -27,34 +27,23 @@
   sudo: yes
   when: php_type is defined
 
-- name: Set PHP memory limit (CLI)
-  ini_file: dest=/etc/php5/cli/php.ini
-            section=PHP
-            option=memory_limit
-            value={{ php_memory_limit | default('256M') }}
+- name: Configure PHP CLI
+  ini_file: 
+    dest=/etc/php5/cli/php.ini
+    section=PHP
+    option="{{ item.key }}"
+    value="{{ item.value }}"
+  with_dict: php_ini_cli
   sudo: yes
 
-- name: Display errors in non-production environments
-  ini_file: dest="/etc/php5/{{ php_type | default('fpm') }}/php.ini"
-            section=PHP
-            option=display_errors
-            value=On
-  when: env is not defined or (env is defined and env != "production")
-  notify:
-  - restart php5-server
+- name: Configure PHP server
+  ini_file:
+    dest="/etc/php5/{{ php_type | default('fpm') }}/php.ini"
+    section=PHP
+    option="{{ item.key }}"
+    value="{{ item.value }}"
+  with_dict: php_ini_server
   sudo: yes
-  when: php_type is defined
-
-- name: Set max post size
-  ini_file: dest="/etc/php5/{{ php_type | default('fpm') }}/php.ini"
-            section=PHP
-            option=upload_max_filesize
-            value={{ php_post_max_size | default('8M') }}
-  ini_file: dest="/etc/php5/{{ php_type | default('fpm') }}/php.ini"
-            section=PHP
-            option=post_max_size
-            value={{ php_post_max_size | default('8M') }}
   notify:
-  - restart php5-server
-  sudo: yes
+    - restart php5-server
   when: php_type is defined

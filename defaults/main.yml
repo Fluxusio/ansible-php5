@@ -1,0 +1,13 @@
+---
+
+php_ini: &php_ini
+  memory_limit: "256M"
+  display_errors: "On"
+  post_max_size: "8M"
+  upload_max_filesize: "8M"
+
+php_ini_cli:
+  << : *php_ini
+
+php_ini_server:
+  << : *php_ini

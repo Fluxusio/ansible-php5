@@ -17,16 +17,6 @@
   when: php_type is defined and php_type == 'fpm'
   sudo: yes
 
-- name: Set PHP memory limit (server)
-  ini_file: dest="/etc/php5/{{ php_type | default('fpm') }}/php.ini"
-            section=PHP
-            option=memory_limit
-            value={{ php_memory_limit | default('256M') }}
-  notify:
-  - restart php5-server
-  sudo: yes
-  when: php_type is defined
-
 - name: Configure PHP CLI
   ini_file: 
     dest=/etc/php5/cli/php.ini

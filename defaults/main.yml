@@ -1,13 +1,26 @@
 ---
 
-php_ini: &php_ini
+php_extra_packages:
+  - php5-memcached
+  - php5-mysqlnd
+  - php5-mcrypt
+  - php5-gd
+  - php5-json
+  - php5-curl
+
+default_php_ini: &php_ini
   memory_limit: "256M"
-  display_errors: "On"
+  display_errors: "Off"
   post_max_size: "8M"
   upload_max_filesize: "8M"
 
-php_ini_cli:
+default_php_ini_cli:
   << : *php_ini
 
-php_ini_server:
+default_php_ini_server:
   << : *php_ini
+
+php_ini_cli:
+php_ini_server:
+
+php_extension_config:

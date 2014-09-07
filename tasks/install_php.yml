@@ -4,18 +4,29 @@
   apt: name={{ item }} state=present install_recommends=no update_cache=yes cache_valid_time=3600
   with_items:
     - php5
-    - php5-memcached
-    - php5-mysqlnd
-    - php5-mcrypt
-    - php5-gd
-    - php5-json
-    - php5-curl
+  sudo: yes
+
+- name: Install PHP extra packages
+  apt: name={{ item }} state=present install_recommends=no update_cache=yes cache_valid_time=3600
+  with_items: php_extra_packages
   sudo: yes
 
 - name: Install php-fpm
   apt: name=php5-fpm state=present install_recommends=no update_cache=yes cache_valid_time=3600
   when: php_type is defined and php_type == 'fpm'
   sudo: yes
+
+- name: Set default PHP CLI configuration
+  ini_file:
+    dest="/etc/php5/{{ php_type | default('fpm') }}/php.ini"
+    section=PHP
+    option="{{ item.key }}"
+    value="{{ item.value }}"
+  with_dict: default_php_ini_server
+  sudo: yes
+  notify:
+    - restart php5-server
+  when: php_type is defined and php_ini_cli[item["key"]] is not defined
 
 - name: Configure PHP CLI
   ini_file: 
@@ -25,6 +36,18 @@
     value="{{ item.value }}"
   with_dict: php_ini_cli
   sudo: yes
+
+- name: Set default PHP server configuration
+  ini_file:
+    dest="/etc/php5/{{ php_type | default('fpm') }}/php.ini"
+    section=PHP
+    option="{{ item.key }}"
+    value="{{ item.value }}"
+  with_dict: default_php_ini_server
+  sudo: yes
+  notify:
+    - restart php5-server
+  when: php_type is defined and php_ini_server[item["key"]] is not defined
 
 - name: Configure PHP server
   ini_file:
@@ -37,3 +60,15 @@
   notify:
     - restart php5-server
   when: php_type is defined
+
+- name: Configure PHP extensions
+  lineinfile:
+    dest="/etc/php5/mods-available/{{ item.0.name }}.ini"
+    regexp="{{ item.0.name }}.{{ item.1.key }}"
+    value="{{ item.0.name }}.{{ item.1.key }}={{ item.1.value }}"
+  with_subelements:
+    - php_extension_config
+    - settings
+  sudo: yes
+    
+    

@@ -11,6 +11,13 @@
   with_items: php_extra_packages
   sudo: yes
 
+# https://bugs.launchpad.net/ubuntu/+source/php-mcrypt/+bug/1318021
+- name: Enable php5-mcrypt extension (workaround for ubuntu bug)
+  shell: php5enmod mcrypt
+  sudo: yes
+  notify:
+    - restart php5-server
+
 - name: Install php-fpm
   apt: name=php5-fpm state=present install_recommends=no update_cache=yes cache_valid_time=3600
   when: php_type is defined and php_type == 'fpm'

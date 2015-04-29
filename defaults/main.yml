@@ -14,6 +14,7 @@ default_php_ini: &php_ini
   display_errors: "Off"
   post_max_size: "8M"
   upload_max_filesize: "8M"
+  expose_php: "Off"
 
 default_php_ini_cli:
   << : *php_ini
